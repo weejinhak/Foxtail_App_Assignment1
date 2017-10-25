@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static Context mContext;
+    public boolean isCheatView=false;
+
 
     private Quiz[] quizArray = new Quiz[]{
             new Quiz(R.string.question_iu, true),
@@ -43,7 +45,13 @@ public class MainActivity extends AppCompatActivity {
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkAnswer(true);
+                final Intent intent=getIntent();
+                isCheatView=intent.getBooleanExtra("isCheatView",false);
+                if(isCheatView){
+                    checkCheat(isCheatView);
+                }else {
+                    checkAnswer(true);
+                }
             }
         });
 
@@ -110,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
         int toastMessageId = answer == answerIsTrue ? R.string.correct_toast : R.string.incorrect_toast;
 
         Toast.makeText(this, toastMessageId, Toast.LENGTH_SHORT).show();
+    }
+    private void checkCheat(boolean check){
+        if(check)
+            Toast.makeText(this,"정답 봤잖아!", Toast.LENGTH_SHORT).show();
     }
 
 
