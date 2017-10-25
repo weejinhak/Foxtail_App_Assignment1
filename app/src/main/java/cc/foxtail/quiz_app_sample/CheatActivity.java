@@ -1,6 +1,5 @@
 package cc.foxtail.quiz_app_sample;
 
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,7 +27,6 @@ public class CheatActivity extends AppCompatActivity {
         final Intent intent=getIntent();
         final boolean quizAnswer=intent.getBooleanExtra("quizAnswer",false);
 
-
         answerViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,14 +36,14 @@ public class CheatActivity extends AppCompatActivity {
             }
         });
 
-
         chatBackButton.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(CheatActivity.this, MainActivity.class);
+                Intent intent = new Intent();
                 intent.putExtra("isCheatView",isHintView);
-                startActivity(intent);
+                setResult(RESULT_OK, intent);
+                finish();
+
             }
         });
 

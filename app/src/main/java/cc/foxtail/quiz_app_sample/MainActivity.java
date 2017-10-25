@@ -45,10 +45,8 @@ public class MainActivity extends AppCompatActivity {
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final Intent intent=getIntent();
-                isCheatView=intent.getBooleanExtra("isCheatView",false);
                 if(isCheatView){
-                    checkCheat(isCheatView);
+                    checkCheat(true);
                 }else {
                     checkAnswer(true);
                 }
@@ -58,13 +56,18 @@ public class MainActivity extends AppCompatActivity {
         falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkAnswer(false);
+                if(isCheatView){
+                    checkCheat(true);
+                }else{
+                    checkAnswer(false);
+                }
             }
         });
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex + 1) % quizArray.length;
+                isCheatView=false;
                 updateQuestion();
             }
         });
@@ -72,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex - 1) % quizArray.length;
-
+                isCheatView=false;
                 if (currentIndex < 0)
                     currentIndex = quizArray.length + currentIndex;
                 updateQuestion();
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CheatActivity.class);
                 intent.putExtra("quizAnswer",quizArray[currentIndex].isAnswer());
-                startActivity(intent);
+                startActivityForResult(intent,0);
             }
         });
 
@@ -99,11 +102,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK)
+        if (resultCode != Activity.RESULT_OK) {
             return;
-        if (requestCode == 999) {
-            if (data == null)
-                return;
+        }
+        if (requestCode == 0) {
+            Log.d("result_success","값가져");
+            Boolean result=data.getBooleanExtra("isCheatView",false);
+            if(result){
+                isCheatView=true;
+                Log.d("result_true","true");
+            }else {
+                isCheatView = false;
+                Log.d("result_true", "false");
+            }
         }
 
     }
@@ -116,7 +127,6 @@ public class MainActivity extends AppCompatActivity {
     public void checkAnswer(boolean answer) {
         boolean answerIsTrue = quizArray[currentIndex].isAnswer();
         int toastMessageId = answer == answerIsTrue ? R.string.correct_toast : R.string.incorrect_toast;
-
         Toast.makeText(this, toastMessageId, Toast.LENGTH_SHORT).show();
     }
     private void checkCheat(boolean check){
