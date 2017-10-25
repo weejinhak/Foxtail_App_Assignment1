@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     public static Context mContext;
     public boolean isCheatView = false;
+    static final int CONTACT_REQUEST_CODE = 1;  // The request code
 
 
     private Quiz[] quizArray = new Quiz[]{
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CheatActivity.class);
                 intent.putExtra("quizAnswer", quizArray[currentIndex].isAnswer());
-                startActivityForResult(intent, 0);
+                startActivityForResult(intent,CONTACT_REQUEST_CODE);
             }
         });
 
@@ -102,10 +103,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             return;
         }
-        if (requestCode == 0) {
+        if (requestCode == CONTACT_REQUEST_CODE) {
             Boolean result = data.getBooleanExtra("isCheatView", false);
             if (result) {
                 isCheatView = true;
@@ -139,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         Log.d("MainActivity", "onSave");
         outState.putInt("INDEX", currentIndex);
     }
