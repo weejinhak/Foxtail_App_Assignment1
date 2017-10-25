@@ -14,15 +14,15 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static Context mContext;
-    public boolean isCheatView=false;
+    public boolean isCheatView = false;
 
 
     private Quiz[] quizArray = new Quiz[]{
-            new Quiz(R.string.question_iu, true),
-            new Quiz(R.string.question_americas, true),
-            new Quiz(R.string.question_asia, true),
-            new Quiz(R.string.question_constraint, true),
-            new Quiz(R.string.question_life_cycle, true)
+            new Quiz(R.string.question_iu, false, false),
+            new Quiz(R.string.question_americas, true, false),
+            new Quiz(R.string.question_asia, true, false),
+            new Quiz(R.string.question_constraint, true, false),
+            new Quiz(R.string.question_life_cycle, true, false)
     };
 
     private int currentIndex = 0;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d("MainActivity", "onCreate");
-        mContext=this;
+        mContext = this;
 
         questionTextView = findViewById(R.id.question_text_view);
         Button trueButton = findViewById(R.id.true_button);
@@ -45,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isCheatView){
+                if (isCheatView||quizArray[currentIndex].isHintChecker()) {
                     checkCheat(true);
-                }else {
+                } else {
                     checkAnswer(true);
                 }
             }
@@ -56,9 +56,9 @@ public class MainActivity extends AppCompatActivity {
         falseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isCheatView){
+                if (isCheatView||quizArray[currentIndex].isHintChecker()) {
                     checkCheat(true);
-                }else{
+                } else {
                     checkAnswer(false);
                 }
             }
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex + 1) % quizArray.length;
-                isCheatView=false;
+                isCheatView = false;
                 updateQuestion();
             }
         });
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 currentIndex = (currentIndex - 1) % quizArray.length;
-                isCheatView=false;
+                isCheatView = false;
                 if (currentIndex < 0)
                     currentIndex = quizArray.length + currentIndex;
                 updateQuestion();
@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, CheatActivity.class);
-                intent.putExtra("quizAnswer",quizArray[currentIndex].isAnswer());
-                startActivityForResult(intent,0);
+                intent.putExtra("quizAnswer", quizArray[currentIndex].isAnswer());
+                startActivityForResult(intent, 0);
             }
         });
 
@@ -106,12 +106,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
         if (requestCode == 0) {
-            Log.d("result_success","값가져");
-            Boolean result=data.getBooleanExtra("isCheatView",false);
-            if(result){
-                isCheatView=true;
-                Log.d("result_true","true");
-            }else {
+            Boolean result = data.getBooleanExtra("isCheatView", false);
+            if (result) {
+                isCheatView = true;
+                quizArray[currentIndex].setHintChecker(true);
+                Log.d("result_true", "true");
+            } else {
                 isCheatView = false;
                 Log.d("result_true", "false");
             }
@@ -129,9 +129,10 @@ public class MainActivity extends AppCompatActivity {
         int toastMessageId = answer == answerIsTrue ? R.string.correct_toast : R.string.incorrect_toast;
         Toast.makeText(this, toastMessageId, Toast.LENGTH_SHORT).show();
     }
-    private void checkCheat(boolean check){
-        if(check)
-            Toast.makeText(this,"정답 봤잖아!", Toast.LENGTH_SHORT).show();
+
+    private void checkCheat(boolean check) {
+        if (check)
+            Toast.makeText(this, "정답 봤잖아!", Toast.LENGTH_SHORT).show();
     }
 
 
